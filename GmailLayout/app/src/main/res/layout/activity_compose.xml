@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".ComposeActivity">
+
+    <TextView
+            android:id="@+id/email_address"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:text="To: "
+            android:textSize="21sp" />
+
+    <EditText
+            android:id="@+id/subject"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/email_address"
+            android:layout_margin="5sp"
+            android:padding="5sp"
+            android:text="Subject:"
+            android:textSize="21sp" />
+
+    <EditText
+            android:id="@+id/email_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/cancel_button"
+            android:layout_below="@id/subject"
+            android:layout_margin="5sp"
+            android:gravity="top|start"
+            android:padding="5sp"
+            android:text="Your email content here ..."
+            android:textSize="21sp" />
+
+    <Button
+            android:id="@+id/cancel_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            android:layout_margin="5sp"
+            android:text="CANCEL" />
+
+    <Button
+            android:id="@+id/send_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_margin="5sp"
+            android:layout_toLeftOf="@id/cancel_button"
+            android:text="SEND" />
+
+
+</RelativeLayout>

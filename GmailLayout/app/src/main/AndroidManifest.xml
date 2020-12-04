@@ -9,8 +9,10 @@
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
             android:theme="@style/Theme.GmailLayout">
-        <activity android:name=".DetailActivity"
-                android:theme="@style/Theme.AppCompat.DayNight.Dialog"></activity>
+        <activity android:name=".ComposeActivity"></activity>
+        <activity
+                android:name=".DetailActivity"
+                android:theme="@style/Theme.AppCompat.DayNight.Dialog" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

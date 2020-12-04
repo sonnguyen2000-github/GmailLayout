@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         tools:context=".DetailActivity">
+
     <TextView
+            android:id="@+id/mail_detail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:padding="10dp"
-            android:textSize="30dp"
-            android:layout_margin="15dp"
-            android:text="Nothing to shown"/>
+            android:layout_margin="15sp"
+            android:padding="5sp"
+            android:text="Nothing to shown"
+            android:textSize="21sp" />
 
 </LinearLayout>

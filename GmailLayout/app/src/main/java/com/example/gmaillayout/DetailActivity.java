@@ -1,8 +1,9 @@
 package com.example.gmaillayout;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
+import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 public class DetailActivity extends AppCompatActivity{
 
@@ -10,5 +11,9 @@ public class DetailActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
+        //
+        TextView textView = findViewById(R.id.mail_detail);
+        Bundle bundle = getIntent().getExtras();
+        textView.setText(bundle.getString("detail"));
     }
 }

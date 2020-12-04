@@ -1,101 +1,165 @@
 package com.example.gmaillayout;
 
-import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.LinearLayout;
-import android.widget.ScrollView;
-import android.widget.TextView;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.SearchView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.viewpager2.adapter.FragmentStateAdapter;
+import androidx.viewpager2.widget.ViewPager2;
 
-import com.github.javafaker.Faker;
-
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 
 public class MainActivity extends AppCompatActivity{
-    Map<Integer, Boolean> starMap;
-    List<Faker> data;
-    List<Integer> colors;
-    ScrollView scrollView;
-    LinearLayout linearLayout;
+    private InboxFragment inboxFragment;
+    private OutboxFragment outboxFragment;
+    private TabLayout tabLayout;
+    private ViewPager2 viewPager2;
+    private boolean isShownFavorite;
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         //
-        Integer color[] = {Color.RED, Color.BLUE, Color.GREEN, Color.CYAN, Color.YELLOW, Color.GRAY, Color.DKGRAY, Color.MAGENTA, Color.LTGRAY, Color.BLACK};
-        colors = new ArrayList<>();
-        for(int e : color){
-            colors.add(e);
-        }
+        viewPager2 = findViewById(R.id.fragment_holder);
+        ViewPager2Adapter viewPager2Adapter = new ViewPager2Adapter(this);
+        viewPager2.setAdapter(viewPager2Adapter);
+        viewPager2.setCurrentItem(1);
+        viewPager2.setCurrentItem(0);
         //
-        data = new ArrayList<>();
-        starMap = new LinkedHashMap<>();
-        for(int i = 0; i < 20; i++){
-            data.add(new Faker());
-            Log.v("person" + i, data.get(i).name().fullName());
-        }
+        tabLayout = findViewById(R.id.tab_layout);
+        new TabLayoutMediator(tabLayout, viewPager2, (tab, position) -> {
+            switch(position){
+                case 0:
+                    tab.setText("INBOX");
+                    break;
+                case 1:
+                    tab.setText("OUTBOX");
+                    break;
+            }
+        }).attach();
+        /*
+        *
+        * fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        inboxFragment = InboxFragment.newInstance();
+        fragmentTransaction.replace(R.id.fragment_holder, inboxFragment);
+        fragmentTransaction.commit();
         //
-        scrollView = findViewById(R.id.body);
-        linearLayout = findViewById(R.id.linear_layout);
-        linearLayout.setOnClickListener(v -> {
-        });
-        //
-        for(int i = 0; i < data.size(); i++){
-            View view = LayoutInflater.from(this).inflate(R.layout.info_layout, linearLayout, false);
-            view.setId(i);
-            TextView email = view.findViewById(R.id.email);
-            TextView detail = view.findViewById(R.id.detail);
-            TextView time = view.findViewById(R.id.time);
-            TextView avatar = view.findViewById(R.id.avatar_text);
-            starMap.put(view.getId(), false);
-            view.setOnClickListener(v -> {
-                System.out.println(v.getId());
-                TextView starred = v.findViewById(R.id.star);
-                if(!starMap.get(v.getId())){
-                    starMap.replace(v.getId(), true);
-                    starred.setBackgroundResource(android.R.drawable.star_on);
-                }else{
-                    starMap.replace(v.getId(), false);
-                    starred.setBackgroundResource(android.R.drawable.star_off);
-                }
+        fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        outboxFragment = OutboxFragment.newInstance();
+        fragmentTransaction.commit();*/
+        isShownFavorite = false;
+    }
 
-            });
-            detail.setOnClickListener(v -> {
-                Intent intent = new Intent(MainActivity.this, DetailActivity.class);
-                System.out.println(v.getRootView().getId());
-                startActivity(intent);
-            });
-            email.setOnClickListener(v -> {
-            });
-            time.setOnClickListener(v -> {
-            });
-            avatar.setOnClickListener(v -> {
-            });
-            //
-            Faker temp = data.get(i);
-            email.setText(temp.internet().emailAddress());
-            detail.setText("I'm " + temp.name().fullName() + " from " + temp.address().city() + ", " + temp.address().country());
-            time.setText(temp.date().birthday().toString());
-            avatar.setText(temp.internet().emailAddress().toUpperCase().charAt(0) + "");
-            //
-            int random = new Random().nextInt(colors.size() - 1);
-            avatar.getBackground().setColorFilter(colors.get(random), PorterDuff.Mode.SRC);
-            linearLayout.addView(view);
-            //
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    @Override
+    public void onResume(){
+        super.onResume();
+        System.out.println("Resume");
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu){
+        getMenuInflater().inflate(R.menu.gmail_actionbar, menu);
+        ActionBar actionBar = getSupportActionBar();
+        assert actionBar != null;
+        actionBar.setTitle("GMAIL_LAYOUT");
+        actionBar.setDisplayShowCustomEnabled(true);
+        /**/
+        SearchView searchView = (SearchView) menu.findItem(R.id.search_button).getActionView();
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener(){
+            @Override
+            public boolean onQueryTextSubmit(String query){
+                search(query);
+                searchView.clearFocus();
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText){
+                Log.v("Typing", newText);
+                search(newText);
+                return true;
+            }
+        });
+        searchView.setOnCloseListener(() -> {
+            searchView.clearFocus();
+            reset();
+            return false;
+        });
+        MenuItem favoriteItem = menu.findItem(R.id.favorite);
+        favoriteItem.setOnMenuItemClickListener(item -> {
+            favoriteItem.setIcon(isShownFavorite ? android.R.drawable.btn_star_big_off :
+                                 android.R.drawable.btn_star_big_on);
+            isShownFavorite = !isShownFavorite;
+            search(isShownFavorite);
+            Log.v("Favorite", isShownFavorite + "");
+            return true;
+        });
+        return true;
+    }
+
+    public void search(String keyword){
+        Log.v("Searching", keyword);
+        if(inboxFragment.isVisible()){
+            inboxFragment.search(keyword);
+        }else if(outboxFragment.isVisible()){
+            outboxFragment.search(keyword);
+        }
+        //
+    }
+
+    public void search(boolean starred){
+        if(inboxFragment.isVisible()){
+            inboxFragment.search(starred);
+        }
+    }
+
+    public void reset(){
+        if(inboxFragment.isVisible()){
+            inboxFragment.reset();
+        }else if(outboxFragment.isVisible()){
+            outboxFragment.reset();
+        }
+    }
+
+    public void newOutbox(Bundle bundle){
+        outboxFragment.newOutbox(bundle);
+    }
+
+    class ViewPager2Adapter extends FragmentStateAdapter{
+
+        public ViewPager2Adapter(@NonNull FragmentActivity fragmentActivity){
+            super(fragmentActivity);
+        }
+
+        @NonNull
+        @Override
+        public Fragment createFragment(int position){
+            switch(position){
+                case 0:
+                    inboxFragment = InboxFragment.newInstance();
+                    return inboxFragment;
+                case 1:
+                    outboxFragment = OutboxFragment.newInstance();
+                    return outboxFragment;
+            }
+            return null;
+        }
+
+        @Override
+        public int getItemCount(){
+            return 2;
         }
     }
 }
